@@ -422,7 +422,9 @@
       <!-- ================= 01 ================= -->
       <section id="model">
         <h2>The mental model</h2>
-        <p class="lede">The name is a description, and the honest way to read this page is to take it apart. <strong>Symbolic</strong> because <code>REASON</code> requires an executable Prolog derivation, not prose. <strong>Evidence-gated</strong> because each authority has deterministic completion checks that run before a candidate answer can be published. <strong>Orchestrator</strong> because the model never picks the route.</p>
+        <p class="lede">The name is a description, and the honest way to read this page is to take it apart. <strong>Symbolic</strong> because every authority reasons over declared symbols and rules rather than raw impression &mdash; and each one does it differently. <strong>Evidence-gated</strong> because each authority has deterministic completion checks that run before a candidate answer can be published. <strong>Orchestrator</strong> because the model never picks the route.</p>
+
+        <p>That first word is a system-wide commitment, not a synonym for Prolog. <code>REASON</code> derives its conclusions by executing a Prolog knowledge base. <code>CODE</code> registers decidable claims in a runtime-owned, revision-bound <em>CODE Formal Model</em>, where a claim&rsquo;s class fixes exactly one procedure that must discharge it &mdash; a knowledge-base query, an approved typecheck, an SMT formalization, or the maths bridge. <code>MATHS</code> works in SymPy, Z3, and Lean. Three mechanisms, one posture: nothing counts because it was asserted.</p>
 
         <p>The load-bearing sentence is this one: a temperature-zero model extracts <em>what evidence a request requires</em>, runtime-owned SWI-Prolog derives the shortest valid authority sequence from those facts, each authority executes its own native workflow, and a final-candidate verifier refuses to publish until the gates pass.</p>
 
@@ -883,7 +885,7 @@ EVO_REASON_STRATEGY_MODE=off    <span class="c"># default</span></pre></div>
       <section id="prolog">
         <h2>Prolog and the knowledge base</h2>
 
-        <p class="lede">SWI-Prolog is not a library call here &mdash; it is the symbolic layer, and the runtime owns the harness so the model cannot replace it.</p>
+        <p class="lede">SWI-Prolog is not a library call here &mdash; it is the derivation authority for symbolic, assumption-laden reasoning, and the runtime owns the harness so the model cannot replace it.</p>
 
         <p>Four <code>.pl</code> assets ship with the runtime, each stamped <em>&ldquo;do not edit or redefine&rdquo;</em>:</p>
 
@@ -999,12 +1001,37 @@ successful derivation alone cannot authorize dissolution.</pre></div>
 edit                            <span class="c"># atomic, revision-checked; replace_text never truncates</span>
 undo                            <span class="c"># revert</span>
 bash                            <span class="c"># verification commands set codeVerified=true</span>
+code_symbolic_claim             <span class="c"># register a decidable claim for formal discharge</span>
 verify_plan                     <span class="c"># plan checks must be verified</span>
 code_sandbox_run                <span class="c"># ephemeral OS sandbox, network off by default</span>
 publish                         <span class="c"># gated on the above</span></pre></div>
         </div>
 
         <p><code>edit</code> is revision-checked and atomic, and its <code>replace_text</code> mode is documented as the preferred way to edit precisely because it never truncates the file. Destructive <code>bash</code> commands are refused. Verification commands &mdash; test, check, build, lint &mdash; are the ones that set <code>codeVerified</code>.</p>
+
+        <h3>The CODE Formal Model</h3>
+
+        <p>CODE has its own symbolic layer, and it is easy to miss because it looks nothing like Prolog. <code>code_symbolic_claim</code> registers a decidable claim and binds it to the exact source it came from. The claim&rsquo;s class then fixes exactly one procedure that must discharge it, and no weaker substitute is accepted.</p>
+
+        <div class="tablewrap">
+          <table>
+            <thead><tr><th>Claim class</th><th>Discharged by</th></tr></thead>
+            <tbody>
+              <tr><td><code>structural</code></td><td>a Prolog goal run over the generated CODE knowledge base</td></tr>
+              <tr><td><code>type_shape</code></td><td>an approved verification command from the runtime plan</td></tr>
+              <tr><td><code>constraint</code></td><td>an SMT formalization of the claim</td></tr>
+              <tr><td><code>mathematical_correspondence</code></td><td>the maths bridge</td></tr>
+              <tr><td><code>behavioral</code></td><td>evidential &mdash; no decision procedure gates completion</td></tr>
+              <tr><td><code>subjective</code></td><td>none</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>Registration asserts nothing by itself. Every formal fact must be bound to a source excerpt that actually occurs inside the cited line range, so a model-supplied &ldquo;fact&rdquo; is a candidate and never authority, and a source/excerpt mismatch is rejected outright. Constraint claims additionally require a non-vacuous support set.</p>
+
+        <p>Claims are bound to a workspace revision, and <strong>any revision change invalidates the discharge</strong>. That is what keeps a verified claim from outliving the code it was verified against &mdash; edit the file and the claim goes back to being unproven, rather than quietly remaining true about a version that no longer exists. A mutation marks the claim <code>stale</code>, clears its verdict and bindings, and names the changed paths that intersect its support.</p>
+
+        <p>The gate is additive: a read-only CODE turn that asserts no decidable claim carries an empty claim set, so this never fires, and ordinary CODE work is unaffected. Note also where <code>constraint</code> claims go to be discharged &mdash; to SMT, the same entailment authority <code>REASON</code> uses. A CODE turn can reach into another authority&rsquo;s symbolic machinery, which is exactly why &ldquo;symbolic&rdquo; cannot be filed under one tier.</p>
 
         <h3>Where CODE evidence stops</h3>
 

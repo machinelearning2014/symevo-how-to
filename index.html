@@ -658,7 +658,7 @@ node dist/cli.js <span class="s">"..."</span>         <span class="c"># the same
           </table>
         </div>
 
-        <p>Keyboard: <code>Escape</code> cancels a running turn, <code>Ctrl+C</code> clears a non-empty editor or exits when empty, and <code>Shift+Enter</code> / <code>Ctrl+Enter</code> / <code>Alt+Enter</code> insert a newline.</p>
+        <p>Keyboard: <code>Escape</code> cancels a running turn. <code>Ctrl+C</code> interrupts a running turn, otherwise clears a non-empty editor, otherwise exits. <code>Shift+Enter</code>, <code>Ctrl+Enter</code>, and <code>Alt+Enter</code> insert a newline.</p>
 
         <div class="note">
           <span class="note-head">/quit is invisible</span>
@@ -742,7 +742,7 @@ node dist/cli.js <span class="s">"..."</span>         <span class="c"># the same
 
         <p class="lede">Triage is called the Evidence Router, and its design rule is the most interesting thing in the system: <strong>the model extracts meaning, the runtime chooses the route.</strong></p>
 
-        <p>A temperature-zero model run returns strict JSON and nothing else. It is a fact extractor, not a router. It reports the action, the target, the criteria the request implies, any operations requested, an explicit tier if you named one, and the proof mode. Then it stops. Model-supplied <code>phases</code> and <code>evidence_requirements</code> are ignored outright.</p>
+        <p>A temperature-zero model run returns strict JSON and nothing else. It is a fact extractor, not a router. It reports the action, the target, the criteria the request implies, any operations requested, an explicit tier if you named one, and the proof mode. Then it stops. On the typed <code>schema_version</code> 2 path, model-supplied <code>phases</code> and <code>evidence_requirements</code> are ignored &mdash; the route is not the model&rsquo;s to pick. A legacy compatibility path is still accepted for stored or older classifier responses, and that path does read them.</p>
 
         <div class="codewrap">
           <button class="copy" type="button" data-copy>copy</button>
@@ -758,7 +758,7 @@ node dist/cli.js <span class="s">"..."</span>         <span class="c"># the same
 }
 
 <span class="c">// what the model may NOT say</span>
-<span class="c">//   "phases": [...]        -- ignored. the route is not the model's to pick.</span>
+<span class="c">//   "phases": [...]        -- ignored on the schema_version 2 path.</span>
 <span class="c">//   "tier": "MATHS"        -- only honored when the user named it explicitly.</span></pre></div>
         </div>
 
@@ -769,19 +769,24 @@ node dist/cli.js <span class="s">"..."</span>         <span class="c"># the same
         <h3>What Prolog does with the facts</h3>
 
         <div class="codewrap">
+          <span class="filename">src/agent/triage-semantic-program.ts &mdash; excerpt, reproduced verbatim</span>
           <button class="copy" type="button" data-copy>copy</button>
           <div class="codeblock"><pre><span class="c">% criteria map to the evidence kinds that satisfy them</span>
-criterion_evidence(argument_quality,    conceptual_derivation).
-criterion_evidence(source_inspection,   workspace_source).
-criterion_evidence(runtime_results,     runtime_behavior).
-criterion_evidence(mathematical_proof,  mathematical_proof).
+criterion_evidence(argument_quality, conceptual_derivation).
+criterion_evidence(source_inspection, workspace_source).
+criterion_evidence(runtime_results, runtime_behavior).
+criterion_evidence(mathematical_proof, mathematical_proof).
 criterion_evidence(constraint_entailment, smt_entailment).
-criterion_evidence(conceptual_proof,    lean_proof).
+criterion_evidence(conceptual_proof, lean_proof).
 
 <span class="c">% obligations, then owners, then a shortest valid sequence</span>
-required(E) :- criterion(C), criterion_evidence(C, E).
+required(E) :- criterion(C), criterion_evidence(C,E).
 required(assumption_analysis) :- criterion(assumptions).
-required_owner(E) :- required(E), evidence_owner(E, Owner).
+required(workspace_source) :- operation(workspace_mutation).
+required(repository_state) :- operation(O), memberchk(O,[commit,amend,push,create_pr]).
+required_owner(O) :- required(E), owner(E,O).
+allowed(O) :- required_owner(O).
+allowed(O) :- explicit(O).
 
 <span class="c">% the default is REASON only when nothing else is required or named</span>
 allowed(reason) :- \+ required(_), \+ explicit(_).
@@ -887,7 +892,7 @@ EVO_REASON_STRATEGY_MODE=off    <span class="c"># default</span></pre></div>
 
         <p class="lede">SWI-Prolog is not a library call here &mdash; it is the derivation authority for symbolic, assumption-laden reasoning, and the runtime owns the harness so the model cannot replace it.</p>
 
-        <p>Four <code>.pl</code> assets ship with the runtime, each stamped <em>&ldquo;do not edit or redefine&rdquo;</em>:</p>
+        <p>Four <code>.pl</code> assets ship with the runtime, and all four are runtime-owned. The first two carry an explicit <em>&ldquo;do not edit or redefine&rdquo;</em> stamp; the generated knowledge base says only <em>&ldquo;do not edit&rdquo;</em>:</p>
 
         <div class="tablewrap">
           <table>
@@ -1101,7 +1106,7 @@ publish                         <span class="c"># gated on the above</span></pre
 
         <div class="note">
           <span class="note-head">Undocumented variables ship silently</span>
-          <p><code>EVO_RG_PATH</code>, <code>X_API_BEARER_TOKEN</code>, and the legacy <code>TWITTER_*</code> aliases are read by the code but appear in no documentation. The reason is a gap in the coverage validator: it scans a fixed list of seven files and does not include <code>workspace-tools.ts</code> or <code>x-tools.ts</code>, so variables read there never fail <code>npm run docs:check</code>.</p>
+          <p><code>EVO_RG_PATH</code>, <code>X_API_BEARER_TOKEN</code>, and the legacy <code>TWITTER_*</code> aliases are read by the code but appear in no documentation. The reason is a gap in the coverage validator: it scans a fixed list of eight files and does not include <code>workspace-tools.ts</code> or <code>x-tools.ts</code>, so variables read there never fail <code>npm run docs:check</code>.</p>
         </div>
 
         <p>One documented default deserves a callout rather than a footnote: the Gmail integration ships a <strong>non-placeholder default account address</strong> in <code>.env.example</code> and in the generated configuration reference. Set <code>GMAIL_ACCOUNT</code> explicitly rather than relying on the default.</p>
@@ -1117,7 +1122,7 @@ publish                         <span class="c"># gated on the above</span></pre
           <li><b>--chat-port turns chat on</b>Passing a port implicitly enables <code>--chat</code> and opens a browser to a token-bearing localhost URL.</li>
           <li><b>The log path documented in the README is wrong</b>The README says logs default under <code>.evo/logs/</code>. The code defaults to <code>&lt;EVO_ARTIFACT_ROOT&gt;/logs/evo.log</code>. <code>EVO_LOG_PATH</code> overrides both.</li>
           <li><b>No --version, no --</b>There is no version flag and no argument terminator. Any unrecognized <code>-x</code> throws.</li>
-          <li><b>EVO_REQUIRE_LEAN is a startup gate, not a runtime one</b>It makes the public server fail to boot when the Lean smoke proof cannot run. Without it, the server deliberately continues with the Lean tools disabled.</li>
+          <li><b>EVO_REQUIRE_LEAN does not fail boot</b>Its name and its description in <code>.env.example</code> both say it should stop the server when the Lean smoke proof cannot run. The code does not: enabling it runs a startup preflight, and a <em>failed</em> preflight only logs a warning and continues, so the platform healthcheck still passes with the Lean-dependent tools disabled. Nothing fails fast.</li>
           <li><b>Missing JWT_SECRET is a hard boot failure</b>The server refuses to start, and the error message explains the alternative: every session token would be forgeable.</li>
           <li><b>code_worker is a stub</b>It is registered as an unavailable compatibility adapter and tells you to use <code>evo_subagent</code> instead.</li>
           <li><b>Documented tools may be unavailable</b>The docs generator hard-codes the strategy portfolio as enabled so it can document the full tool surface. At the default <code>EVO_REASON_STRATEGY_MODE=off</code>, <code>reason_strategy</code> is not registered at all.</li>

@@ -676,17 +676,23 @@ node dist/cli.js <span class="s">"..."</span>         <span class="c"># the same
 
         <div class="tablewrap">
           <table>
-            <thead><tr><th>Authority</th><th>Rigor</th><th>Evidence that closes the gate</th></tr></thead>
+            <thead><tr><th>Authority</th><th>Declared level</th><th>Evidence that closes the gate</th></tr></thead>
             <tbody>
-              <tr><td rowspan="4"><code>MATHS</code></td><td>computational</td><td><code>python_exec</code> or <code>sympy_exec</code> with a computation check</td></tr>
-              <tr><td>derivational</td><td><code>maths_problem stage=derive</code> then <code>verify_final</code></td></tr>
-              <tr><td>proof</td><td>construction or exclusion evidence, then <code>verify_final</code></td></tr>
-              <tr><td>formal</td><td>proof rigor first, then Lean 4 verification against exact source hashes</td></tr>
-              <tr><td><code>CODE</code></td><td>&mdash;</td><td>source files, repository metadata, build and test output; source inspection plus the post-mutation diff plus native build/test</td></tr>
+              <tr><td rowspan="4"><code>MATHS</code></td><td>rigor: <code>computational</code></td><td><code>python_exec</code> or <code>sympy_exec</code> with a computation check</td></tr>
+              <tr><td>rigor: <code>derivational</code></td><td><code>maths_problem stage=derive</code> then <code>verify_final</code></td></tr>
+              <tr><td>rigor: <code>proof</code></td><td>construction or exclusion evidence, then <code>verify_final</code></td></tr>
+              <tr><td>rigor: <code>formal</code></td><td>proof rigor first, then Lean 4 verification against exact source hashes</td></tr>
+              <tr><td rowspan="3"><code>CODE</code></td><td>verification level: <code>standard</code></td><td>source files, repository metadata, build and test output; source inspection plus the post-mutation diff plus native build/test</td></tr>
+              <tr><td>verification level: <code>mathematical</code></td><td>the same, plus a source-bound verification manifest</td></tr>
+              <tr><td>verification level: <code>implementation_bound_formal</code></td><td>the same, plus mechanically verified source-to-model refinement &mdash; which does not exist yet, so such a request cannot complete on a model proof</td></tr>
               <tr><td><code>REASON</code></td><td>&mdash;</td><td>an executable Prolog derivation with proof traces, consistency checks, and assumption-dependence testing</td></tr>
             </tbody>
           </table>
         </div>
+
+        <p>Only <code>MATHS</code> calls its levels <em>rigor</em>. <code>CODE</code> has a level too &mdash; <code>CodeVerificationLevel</code>, set with <code>verification_level=mathematical</code> or <code>verification_level=implementation_bound_formal</code> in the request &mdash; and it gates just as hard: any level above <code>standard</code> demands a source-bound verification manifest whose declared level must match, and <code>implementation_bound_formal</code> additionally demands a refinement proof the runtime cannot yet produce.</p>
+
+        <p><code>REASON</code> declares no level at all, and that is the interesting part. Its obligations are not selected by a dial the caller turns; they are <em>derived</em> from the evidence kinds the request requires. Ask for something needing constraint entailment and SMT becomes an obligation; ask for a conceptual proof and Lean does. The rigor is an output of triage, not an input to it.</p>
 
         <p>The <code>REASON</code> rule is stated flatly in the system prompt: <strong>the Prolog derivation is the evidence.</strong> Not a description of one, not a summary of one.</p>
 

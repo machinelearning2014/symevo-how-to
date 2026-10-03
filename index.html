@@ -1,0 +1,1214 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SYMEVO Field Reference</title>
+<meta name="description" content="A field reference for SYMEVO, a symbolic evidence-gated verification orchestrator: three authorities, a Prolog-derived route, and deterministic gates that refuse to publish an unchecked answer.">
+<style>
+  /* ============================================================
+     Laya Field Reference
+     Layout: instrument-panel reference. Sticky index rail at
+     >=960px, single column below. Dense code on hairline surfaces;
+     the brass accent is reserved for the one thing under emphasis.
+     ============================================================ */
+
+  :root {
+    --bg:          #F4F6F8;
+    --surface:     #FFFFFF;
+    --surface-sunk:#EDF0F4;
+    --ink:         #121A23;
+    --ink-muted:   #5B6875;
+    --rule:        #DFE4EA;
+    --rule-strong: #C6CFD9;
+    --accent:      #8A5A12;
+    --accent-soft: #F5E9D4;
+    --accent-ink:  #6B4409;
+    --good:        #2F6B4F;
+
+    --display: "IBM Plex Sans Condensed", "Helvetica Neue", Arial, sans-serif;
+    --body:    "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --mono:    "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+    --step--1: 0.8125rem;
+    --step-0:  0.9375rem;
+    --step-1:  1.0625rem;
+    --step-2:  1.375rem;
+    --step-3:  1.875rem;
+    --step-4:  2.5rem;
+
+    --gutter: 20px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg:          #0E1419;
+      --surface:     #161E26;
+      --surface-sunk:#1C252E;
+      --ink:         #E4E9EF;
+      --ink-muted:   #97A3B1;
+      --rule:        #26313C;
+      --rule-strong: #384654;
+      --accent:      #D9A441;
+      --accent-soft: #2B2418;
+      --accent-ink:  #EFC271;
+      --good:        #6FBF95;
+      color-scheme: dark;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --bg:          #0E1419;
+    --surface:     #161E26;
+    --surface-sunk:#1C252E;
+    --ink:         #E4E9EF;
+    --ink-muted:   #97A3B1;
+    --rule:        #26313C;
+    --rule-strong: #384654;
+    --accent:      #D9A441;
+    --accent-soft: #2B2418;
+    --accent-ink:  #EFC271;
+    --good:        #6FBF95;
+    color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--body);
+    font-size: var(--step-0);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    padding-inline: var(--gutter);
+    padding-block: 0;
+  }
+
+  .shell { max-width: 1180px; margin-inline: auto; }
+
+  /* ---------- masthead ---------- */
+
+  .masthead {
+    padding-block: 44px 26px;
+    border-bottom: 2px solid var(--ink);
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: var(--step--1);
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+  .masthead h1 {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: var(--step-4);
+    line-height: 1.02;
+    letter-spacing: -0.015em;
+    margin: 0;
+    text-wrap: balance;
+  }
+  .standfirst {
+    font-size: var(--step-1);
+    color: var(--ink-muted);
+    max-width: 62ch;
+    margin: 0;
+  }
+  .meta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 18px;
+    font-family: var(--mono);
+    font-size: var(--step--1);
+    color: var(--ink-muted);
+    padding-top: 4px;
+  }
+  .meta-row b { color: var(--ink); font-weight: 500; }
+
+  /* ---------- two-column body ---------- */
+
+  .columns {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+  @media (min-width: 960px) {
+    .columns { grid-template-columns: 216px 1fr; gap: 56px; align-items: start; }
+  }
+
+  nav.rail {
+    padding-block: 28px;
+    border-bottom: 1px solid var(--rule);
+    min-width: 0;
+  }
+  @media (min-width: 960px) {
+    nav.rail {
+      position: sticky;
+      top: calc(env(safe-area-inset-top, 0px) + 20px);
+      border-bottom: none;
+      padding-block: 34px 40px;
+      max-height: calc(100vh - 40px);
+      overflow-y: auto;
+    }
+  }
+  .rail-label {
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    margin-bottom: 10px;
+  }
+  nav.rail ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 14px;
+    counter-reset: rail;
+  }
+  @media (min-width: 960px) {
+    nav.rail ol { flex-direction: column; flex-wrap: nowrap; gap: 0; }
+  }
+  nav.rail a {
+    display: block;
+    font-size: var(--step--1);
+    color: var(--ink-muted);
+    text-decoration: none;
+    padding: 5px 0;
+    border-bottom: 1px solid transparent;
+  }
+  @media (max-width: 959px) {
+    nav.rail a { border: 1px solid var(--rule); border-radius: 3px; padding: 4px 9px; background: var(--surface); }
+  }
+  nav.rail a:hover, nav.rail a:focus-visible { color: var(--accent); }
+  nav.rail a.on { color: var(--ink); border-bottom-color: var(--accent); }
+  @media (max-width: 959px) { nav.rail a.on { border-color: var(--accent); color: var(--accent-ink); } }
+  nav.rail a .n {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    color: var(--accent);
+    margin-right: 7px;
+  }
+
+  main { padding-block: 34px 96px; min-width: 0; }
+
+  section { padding-block: 34px; border-top: 1px solid var(--rule); }
+  section:first-child { border-top: none; padding-top: 8px; }
+  section > * { max-width: 74ch; }
+
+  h2 {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: var(--step-3);
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+    margin: 0 0 6px;
+    text-wrap: balance;
+  }
+  h3 {
+    font-family: var(--display);
+    font-weight: 600;
+    font-size: var(--step-2);
+    letter-spacing: -0.005em;
+    margin: 34px 0 8px;
+    text-wrap: balance;
+  }
+  h4 {
+    font-family: var(--mono);
+    font-weight: 500;
+    font-size: var(--step--1);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    margin: 26px 0 8px;
+  }
+  p { margin: 0 0 14px; }
+  .lede { font-size: var(--step-1); color: var(--ink-muted); }
+  a { color: var(--accent); text-underline-offset: 2px; }
+  code {
+    font-family: var(--mono);
+    font-size: 0.875em;
+    background: var(--surface-sunk);
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    padding: 0.1em 0.34em;
+  }
+  strong { font-weight: 600; }
+
+  ul.plain { margin: 0 0 14px; padding-left: 1.1em; }
+  ul.plain li { margin-bottom: 6px; }
+
+  /* ---------- code blocks ---------- */
+
+  .codewrap { position: relative; margin: 0 0 18px; max-width: 100%; }
+  .codeblock {
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-left: 3px solid var(--rule-strong);
+    border-radius: 4px;
+    overflow-x: auto;
+    min-width: 0;
+  }
+  .codeblock.is-accent { border-left-color: var(--accent); }
+  .codeblock pre {
+    margin: 0;
+    padding: 14px 16px;
+    font-family: var(--mono);
+    font-size: 0.8125rem;
+    line-height: 1.65;
+    tab-size: 2;
+  }
+  .codeblock pre .c { color: var(--ink-muted); }
+  .codeblock pre .k { color: var(--accent-ink); }
+  .codeblock pre .s { color: var(--good); }
+  .codewrap .filename {
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    color: var(--ink-muted);
+    display: block;
+    margin-bottom: 5px;
+  }
+  .copy {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.04em;
+    color: var(--ink-muted);
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    padding: 3px 8px;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.12s ease;
+  }
+  .codewrap:hover .copy, .copy:focus-visible { opacity: 1; }
+  .copy:hover { color: var(--accent); border-color: var(--accent); }
+  @media (hover: none) { .copy { opacity: 1; } }
+
+  /* ---------- tables ---------- */
+
+  .tablewrap { overflow-x: auto; margin: 0 0 18px; border: 1px solid var(--rule); border-radius: 4px; background: var(--surface); }
+  table { border-collapse: collapse; width: 100%; font-size: var(--step--1); }
+  th, td { text-align: left; padding: 9px 13px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+  th {
+    font-family: var(--mono);
+    font-weight: 500;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    background: var(--surface-sunk);
+    white-space: nowrap;
+  }
+  tr:last-child td { border-bottom: none; }
+  td.num, th.num { text-align: right; font-family: var(--mono); font-variant-numeric: tabular-nums; }
+  td code { background: none; border: none; padding: 0; color: var(--accent-ink); }
+  .tag {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.03em;
+    border: 1px solid var(--rule-strong);
+    border-radius: 3px;
+    padding: 1px 6px;
+    color: var(--ink-muted);
+    white-space: nowrap;
+  }
+  .tag.accent { border-color: var(--accent); color: var(--accent-ink); background: var(--accent-soft); }
+
+  /* ---------- callouts ---------- */
+
+  .note {
+    border-left: 3px solid var(--accent);
+    background: var(--accent-soft);
+    padding: 13px 16px;
+    border-radius: 0 4px 4px 0;
+    margin: 0 0 18px;
+    font-size: var(--step--1);
+  }
+  .note p:last-child { margin-bottom: 0; }
+  .note .note-head {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent-ink);
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  /* ---------- figure ---------- */
+
+  figure { margin: 0 0 22px; max-width: 100%; }
+  .figscroll { overflow-x: auto; border: 1px solid var(--rule); border-radius: 4px; background: var(--surface); padding: 6px; }
+  figure svg { display: block; width: 100%; min-width: 580px; max-width: 780px; height: auto; margin-inline: auto; }
+  figcaption { font-size: var(--step--1); color: var(--ink-muted); margin-top: 9px; max-width: 68ch; }
+  figure text { font-family: var(--mono); fill: currentColor; }
+  figure .lbl { font-family: var(--body); }
+
+  /* ---------- misc ---------- */
+
+  .ledger { display: grid; gap: 1px; background: var(--rule); border: 1px solid var(--rule); border-radius: 4px; overflow: hidden; margin: 0 0 18px; }
+  .ledger div { background: var(--surface); padding: 11px 14px; font-size: var(--step--1); }
+  .ledger .k { font-family: var(--mono); color: var(--accent-ink); }
+  .ledger .v { color: var(--ink-muted); }
+
+  .gotchas { list-style: none; margin: 0 0 18px; padding: 0; display: grid; gap: 12px; }
+  .gotchas li { padding-left: 16px; border-left: 2px solid var(--rule-strong); font-size: var(--step--1); }
+  .gotchas li b { font-family: var(--mono); font-weight: 500; font-size: 0.8125rem; color: var(--accent-ink); display: block; margin-bottom: 1px; }
+
+  footer {
+    border-top: 2px solid var(--ink);
+    padding-block: 20px 40px;
+    font-size: var(--step--1);
+    color: var(--ink-muted);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 20px;
+  }
+
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 2px; }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+</style>
+</head>
+<body>
+
+<div class="shell">
+
+  <header class="masthead">
+    <div class="eyebrow">symevo v2.0.0 &middot; field reference</div>
+    <h1>Evidence before conclusion</h1>
+    <p class="standfirst">SYMEVO classifies a request as <code>MATHS</code>, <code>CODE</code>, or <code>REASON</code>, gives the model authority-specific tools, and refuses to finalize until the corresponding workflow checks pass. It exists to make the distance between &ldquo;the model said so&rdquo; and &ldquo;this was checked&rdquo; visible &mdash; and to make it a refusal, not a footnote.</p>
+    <div class="meta-row">
+      <span><b>Authorities</b> MATHS &middot; CODE &middot; REASON</span>
+      <span><b>Final statuses</b> SOLVED &middot; MAPPED &middot; INCOMPLETE &middot; DISSOLVED</span>
+      <span><b>Verified against</b> package.json 2.0.0, src/ at main</span>
+    </div>
+  </header>
+
+  <div class="columns">
+
+    <nav class="rail" aria-label="Sections">
+      <div class="rail-label">Contents</div>
+      <ol>
+        <li><a href="#model"><span class="n">01</span>The mental model</a></li>
+        <li><a href="#fits"><span class="n">02</span>Where SYMEVO fits</a></li>
+        <li><a href="#setup"><span class="n">03</span>Setup and the authorities</a></li>
+        <li><a href="#cli"><span class="n">04</span>Running the CLI</a></li>
+        <li><a href="#gates"><span class="n">05</span>The evidence gates</a></li>
+        <li><a href="#triage"><span class="n">06</span>Semantic triage</a></li>
+        <li><a href="#strategies"><span class="n">07</span>Reasoning strategies</a></li>
+        <li><a href="#prolog"><span class="n">08</span>Prolog and the knowledge base</a></li>
+        <li><a href="#review"><span class="n">09</span>Independent review</a></li>
+        <li><a href="#tools"><span class="n">10</span>The tool surface</a></li>
+        <li><a href="#workspace"><span class="n">11</span>The CODE workspace</a></li>
+        <li><a href="#formal"><span class="n">12</span>Formal and mathematical work</a></li>
+        <li><a href="#config"><span class="n">13</span>Configuration</a></li>
+        <li><a href="#gotchas"><span class="n">14</span>Gotchas</a></li>
+        <li><a href="#limits"><span class="n">15</span>What it does not claim</a></li>
+      </ol>
+    </nav>
+
+    <main>
+
+      <!-- ================= 01 ================= -->
+      <section id="model">
+        <h2>The mental model</h2>
+        <p class="lede">The name is a description, and the honest way to read this page is to take it apart. <strong>Symbolic</strong> because <code>REASON</code> requires an executable Prolog derivation, not prose. <strong>Evidence-gated</strong> because each authority has deterministic completion checks that run before a candidate answer can be published. <strong>Orchestrator</strong> because the model never picks the route.</p>
+
+        <p>The load-bearing sentence is this one: a temperature-zero model extracts <em>what evidence a request requires</em>, runtime-owned SWI-Prolog derives the shortest valid authority sequence from those facts, each authority executes its own native workflow, and a final-candidate verifier refuses to publish until the gates pass.</p>
+
+        <p>What makes it more than a prompt wrapper is where authority sits. The model classifies and reasons; it does not certify. <strong>Tool output cannot declare its own workflow completion</strong>, and the runtime-owned Prolog harness cannot be redefined by model code. Every terminal answer carries a status the model did not get to award itself.</p>
+
+        <figure>
+          <div class="figscroll">
+            <svg viewBox="0 0 680 596" role="img" aria-label="Diagram: a request is classified by the Evidence Router, an ordered authority plan is derived and certified by Prolog, each authority runs its own evidence workflow, and a final-candidate verifier gates the answer into one of four terminal statuses.">
+              <defs>
+                <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                  <path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/>
+                </marker>
+              </defs>
+
+              <!-- request -->
+              <rect x="32" y="18" width="616" height="56" rx="4" fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.55"/>
+              <text x="48" y="42" font-size="13" class="lbl" font-weight="600">request</text>
+              <text x="48" y="61" font-size="11" opacity="0.65">natural language &mdash; the only thing the model is trusted to interpret</text>
+
+              <line x1="340" y1="74" x2="340" y2="112" stroke="currentColor" stroke-width="1.2" marker-end="url(#ar)" opacity="0.7"/>
+
+              <!-- evidence router -->
+              <rect x="32" y="120" width="616" height="92" rx="4" fill="none" stroke="currentColor" stroke-width="1.4"/>
+              <text x="48" y="143" font-size="13" class="lbl" font-weight="600">Evidence Router &mdash; &ldquo;Lite-REASON&rdquo;</text>
+              <text x="48" y="163" font-size="11" opacity="0.7">temperature-zero model, JSON-only fact extraction</text>
+              <text x="48" y="181" font-size="11" opacity="0.5">extracts action, target, criteria, operations, proof_mode, unresolved, alternatives</text>
+              <text x="48" y="199" font-size="11" opacity="0.5">supplies no phase plan &mdash; model-supplied phases are ignored</text>
+
+              <line x1="340" y1="212" x2="340" y2="250" stroke="currentColor" stroke-width="1.2" marker-end="url(#ar)" opacity="0.7"/>
+
+              <!-- prolog -->
+              <rect x="32" y="258" width="616" height="86" rx="4" fill="none" stroke="currentColor" stroke-width="2.4"/>
+              <text x="48" y="281" font-size="13" class="lbl" font-weight="600">runtime-owned SWI-Prolog</text>
+              <text x="48" y="301" font-size="11" opacity="0.7">criterion_evidence/2 &rarr; required/1 &rarr; required_owner/1 &rarr; shortest valid sequence</text>
+              <text x="48" y="319" font-size="10" opacity="0.5">bounded to 7 phases &middot; enumerate before selecting, so cuts never hide a competing plan</text>
+              <text x="48" y="335" font-size="10" opacity="0.5">emits a routing status and a SHA-256 triage certificate</text>
+
+              <line x1="340" y1="344" x2="340" y2="382" stroke="currentColor" stroke-width="1.4" marker-end="url(#ar)"/>
+
+              <!-- authority phases -->
+              <rect x="32" y="390" width="196" height="104" rx="4" fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.75"/>
+              <text x="46" y="412" font-size="12" font-weight="600" class="lbl">REASON</text>
+              <text x="46" y="432" font-size="10" opacity="0.65">Prolog derivation IS</text>
+              <text x="46" y="446" font-size="10" opacity="0.65">the evidence</text>
+              <text x="46" y="468" font-size="10" opacity="0.5">R1 SETUP &rarr; R6 ANSWER</text>
+              <text x="46" y="484" font-size="10" opacity="0.5">consistency + dependence</text>
+
+              <rect x="242" y="390" width="196" height="104" rx="4" fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.75"/>
+              <text x="256" y="412" font-size="12" font-weight="600" class="lbl">MATHS</text>
+              <text x="256" y="432" font-size="10" opacity="0.65">computation, derivation,</text>
+              <text x="256" y="446" font-size="10" opacity="0.65">proof, or Lean formal</text>
+              <text x="256" y="468" font-size="10" opacity="0.5">M0 START &rarr; M5 ANSWER</text>
+              <text x="256" y="484" font-size="10" opacity="0.5">frozen certificate</text>
+
+              <rect x="452" y="390" width="196" height="104" rx="4" fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.75"/>
+              <text x="466" y="412" font-size="12" font-weight="600" class="lbl">CODE</text>
+              <text x="466" y="432" font-size="10" opacity="0.65">source, diff, build and</text>
+              <text x="466" y="446" font-size="10" opacity="0.65">test output</text>
+              <text x="466" y="468" font-size="10" opacity="0.5">K1 INSPECT &rarr; K5 ANSWER</text>
+              <text x="466" y="484" font-size="10" opacity="0.5">post-mutation diff</text>
+
+              <line x1="340" y1="494" x2="340" y2="522" stroke="currentColor" stroke-width="1.4" marker-end="url(#ar)"/>
+
+              <!-- verifier -->
+              <rect x="112" y="530" width="456" height="30" rx="4" fill="none" stroke="currentColor" stroke-width="2.4"/>
+              <text x="132" y="550" font-size="12" class="lbl" font-weight="600">VerificationController &mdash; refusals are the point</text>
+
+              <line x1="340" y1="560" x2="340" y2="578" stroke="currentColor" stroke-width="1.4" marker-end="url(#ar)"/>
+              <text x="352" y="590" font-size="11" opacity="0.8">SOLVED &middot; MAPPED &middot; INCOMPLETE &middot; DISSOLVED</text>
+            </svg>
+          </div>
+          <figcaption>The turn lifecycle. The model contributes interpretation at the first box and reasoning inside the authority phases; the route, the certificate, and the terminal status are all runtime-owned.</figcaption>
+        </figure>
+
+        <div class="note">
+          <span class="note-head">The one sentence to remember</span>
+          <p>There is no separate model-generated task graph and no graph-level finalizer. The model extracts routing facts, trusted Prolog chooses the route, and each authority workflow remains authoritative for its own completion.</p>
+        </div>
+      </section>
+
+      <!-- ================= 02 ================= -->
+      <section id="fits">
+        <h2>Where SYMEVO fits</h2>
+
+        <p class="lede">This is a verification orchestrator, not a smarter chatbot. The three authorities are the clearest statement of what it is for, and they come with a filter.</p>
+
+        <h3>The filter</h3>
+
+        <ul class="plain">
+          <li><strong>The answer has a checkable form.</strong> A computation you can run, a change you can diff and test, or an argument you can derive from explicit premises. If &ldquo;correct&rdquo; has no mechanical witness, there is nothing here for a gate to consume.</li>
+          <li><strong>You would rather be told INCOMPLETE than be told something fluent.</strong> The system is built to refuse. If a confident paragraph is what you actually need, this is a great deal of machinery for a worse experience.</li>
+          <li><strong>You can state the premises.</strong> For <code>REASON</code>, the derivation is only as good as what you hand it &mdash; and SYMEVO verifies internal consistency, not premise truth. You remain the source of the premises.</li>
+        </ul>
+
+        <h3>What the three authorities replace</h3>
+
+        <div class="tablewrap">
+          <table>
+            <thead><tr><th>Authority</th><th>Evidence that closes it</th><th>What it replaces</th></tr></thead>
+            <tbody>
+              <tr><td><code>MATHS</code></td><td>a computation, a derivation with a frozen certificate, a constructed proof, or exact Lean source hashes</td><td>a model asserting a result it may have hallucinated</td></tr>
+              <tr><td><code>CODE</code></td><td>source inspection, the post-mutation diff, and native build/test output</td><td>a patch that looks right and was never run</td></tr>
+              <tr><td><code>REASON</code></td><td>an executable Prolog derivation with proof traces, consistency checks, and assumption-dependence testing</td><td>a plausible argument with no stated premises</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>The wrong tool</h3>
+
+        <ul class="plain">
+          <li><strong>Open-ended writing.</strong> There is no gate for prose quality, and no authority owns it.</li>
+          <li><strong>Facts you need to be true.</strong> SYMEVO can ground a claim in a source you opened, but it does not verify that the source is right. Search results are discovery only.</li>
+          <li><strong>Latency-critical paths.</strong> A turn runs a classifier, a Prolog process, an authority workflow, and a verifier. There is a per-turn deadline (default 30 minutes) and it is not a small number.</li>
+          <li><strong>Anything where you want the model's own judgement trusted.</strong> That is the thing the architecture is built to not do.</li>
+        </ul>
+
+        <div class="note">
+          <span class="note-head">Read this before trusting the gates</span>
+          <p>SYMEVO improves the traceability and internal validity of an answer. It does not turn a model into an oracle: source truth, source quality, and the correctness of translating natural language into a formal model all remain inside the trust boundary. Section <a href="#limits">15</a> is the honest accounting.</p>
+        </div>
+      </section>
+
+      <!-- ================= 03 ================= -->
+      <section id="setup">
+        <h2>Setup and the authorities</h2>
+
+        <p class="lede">The package is <code>@evo-ai/agent</code> v2.0.0, ESM, Node &ge; 22.19. Model calls go to DeepSeek by default, or Together AI, and everything else is optional until a request needs it.</p>
+
+        <div class="codewrap">
+          <button class="copy" type="button" data-copy>copy</button>
+          <div class="codeblock is-accent"><pre>npm install
+cp .env.example .env        <span class="c"># then set DEEPSEEK_API_KEY</span>
+npm run build               <span class="c"># clean + tsc + make-cli-executable + copy-assets</span>
+npm start                   <span class="c"># node dist/cli.js</span>
+
+npm link                    <span class="c"># optional: exposes the global `evo-ai` bin</span>
+npm run serve               <span class="c"># node dist/server/entry.js &mdash; the public web server</span></pre></div>
+        </div>
+
+        <p>Only the tools a particular request invokes need their dependencies. CODE work does not require SWI-Prolog, Python, or Lean; a pure <code>REASON</code> turn does not need Chromium.</p>
+
+        <div class="tablewrap">
+          <table>
+            <thead>
+              <tr><th>Dependency</th><th>Authority</th><th>Tools it unlocks</th><th>Install</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Node.js &ge; 22.19</td><td>all</td><td>the runtime itself</td><td><code>nodejs.org</code></td></tr>
+              <tr><td>DeepSeek or Together key</td><td>all</td><td>model calls</td><td><code>DEEPSEEK_API_KEY</code></td></tr>
+              <tr><td>SWI-Prolog (<code>swipl</code>)</td><td>REASON</td><td><code>prolog_exec</code>, <code>query_kb</code>, <code>query_code_kb</code></td><td><code>brew install swi-prolog</code></td></tr>
+              <tr><td>Python &ge; 3.10 + workspace <code>.venv</code></td><td>MATHS, CODE</td><td><code>python_exec</code>, <code>sympy_exec</code>, <code>matplotlib_exec</code>, <code>plotly_exec</code></td><td><code>brew install python</code></td></tr>
+              <tr><td>Lean 4 (Lake + Mathlib)</td><td>MATHS (formal)</td><td><code>lean4_exec</code>, <code>lean4_probe</code>, <code>prove_problem</code></td><td><code>lean-lang.org</code></td></tr>
+              <tr><td>Playwright (Chromium)</td><td>CODE, web</td><td><code>web_browse</code>, <code>pdf_write_html</code></td><td><code>npx playwright install chromium</code></td></tr>
+              <tr><td>LaTeX (<code>pdflatex</code>)</td><td>all (PDF output)</td><td><code>pdf_write_latex</code></td><td><code>brew install basictex</code></td></tr>
+              <tr><td>Docker <span class="tag">optional</span></td><td>CODE</td><td><code>code_sandbox_run</code></td><td><code>docker.com</code></td></tr>
+              <tr><td><code>pdftotext</code> <span class="tag">optional</span></td><td>&mdash;</td><td><code>pdf_read</code> on local files</td><td><code>brew install poppler</code></td></tr>
+              <tr><td>Google Cloud OAuth <span class="tag">optional</span></td><td>&mdash;</td><td><code>gmail</code></td><td>see the Gmail integration doc</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>Python packages for the workspace virtualenv live in <code>requirements.txt</code>: <code>sympy</code>, <code>numpy</code>, <code>scipy</code>, <code>scikit-learn</code>, <code>z3-solver</code>, <code>matplotlib</code>, <code>plotly</code>, <code>networkx</code>, <code>mplfinance</code>, <code>pandas</code>, <code>yfinance</code>, <code>kagglehub</code>, <code>datasets</code>. Z3 is pinned to <code>4.15.4.0</code> deliberately &mdash; the comment in the file notes that 5.0 currently lacks a Linux ARM64 wheel.</p>
+
+        <div class="note">
+          <span class="note-head">The workspace guard</span>
+          <p>Launching <code>evo-ai</code> with a working directory inside the SYMEVO installation is refused, because an accidental writable workspace inside the tool&rsquo;s own tree is how you corrupt the thing doing the checking. Pass <code>--workspace</code> explicitly if that is genuinely what you want.</p>
+        </div>
+      </section>
+
+      <!-- ================= 04 ================= -->
+      <section id="cli">
+        <h2>Running the CLI</h2>
+
+        <p class="lede">The CLI is flags-only. There are no subcommands &mdash; no <code>serve</code>, <code>chat</code>, or <code>install</code> verb. <code>npm run serve</code> is an npm script that runs a different entry point, and browser chat is a <code>--chat</code> flag.</p>
+
+        <div class="codewrap">
+          <button class="copy" type="button" data-copy>copy</button>
+          <div class="codeblock"><pre>evo-ai <span class="s">"prove that the sum of two even integers is even"</span>
+evo-ai --workspace /path/to/repo <span class="s">"add a retry to the upload client"</span>
+evo-ai --chat                    <span class="c"># serve the browser chat and open it</span>
+evo-ai --chat-port 8080          <span class="c"># implicitly enables --chat</span>
+node dist/cli.js <span class="s">"..."</span>         <span class="c"># the same thing without npm link</span></pre></div>
+        </div>
+
+        <h3>The flags</h3>
+
+        <div class="tablewrap">
+          <table>
+            <thead><tr><th>Flag</th><th>Takes a value</th><th>Default</th><th>Effect</th></tr></thead>
+            <tbody>
+              <tr><td><code>-h</code>, <code>--help</code></td><td>no</td><td>&mdash;</td><td>prints usage and returns immediately</td></tr>
+              <tr><td><code>-v</code>, <code>--verbose</code></td><td>no</td><td><code>false</code></td><td>routes runtime progress traces to the loader</td></tr>
+              <tr><td><code>--chat</code></td><td>no</td><td><code>false</code></td><td>serves the browser chat dashboard and opens a browser</td></tr>
+              <tr><td><code>--chat-port</code></td><td>yes</td><td><code>0</code> (any free port)</td><td>integer 0&ndash;65535; <strong>silently enables <code>--chat</code></strong></td></tr>
+              <tr><td><code>-m</code>, <code>--model</code></td><td>yes</td><td>configured model</td><td>overrides the model for this run</td></tr>
+              <tr><td><code>--workspace</code></td><td>yes</td><td><code>process.cwd()</code></td><td>the writable workspace; also marks it explicit</td></tr>
+              <tr><td><code>--extra-workspace</code></td><td>yes</td><td>from <code>EVO_EXTRA_WORKSPACES</code></td><td>repeatable; <strong>absent from <code>--help</code></strong></td></tr>
+              <tr><td><code>--no-stream</code></td><td>no</td><td>&mdash;</td><td><strong>a no-op</strong> &mdash; parsed and never read</td></tr>
+              <tr><td>(positional)</td><td>&mdash;</td><td>&mdash;</td><td>joined with spaces into the initial prompt</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>There is no <code>--version</code> flag and no <code>--</code> argument terminator; any unrecognized <code>-x</code> throws <code>Unknown option</code>.</p>
+
+        <h3>Two run modes</h3>
+
+        <p>If both stdin and stdout are TTYs you get the interactive terminal UI. Otherwise SYMEVO runs one-shot: it reads the prompt from the arguments or from stdin, prints the answer, and exits. That fallback is what makes it usable in a pipe.</p>
+
+        <h3>Slash commands</h3>
+
+        <div class="tablewrap">
+          <table>
+            <thead><tr><th>Command</th><th>What it does</th></tr></thead>
+            <tbody>
+              <tr><td><code>/help</code></td><td>the command list</td></tr>
+              <tr><td><code>/reset</code></td><td>clears the conversation (alias: <code>/clear</code>)</td></tr>
+              <tr><td><code>/save &lt;name&gt;</code></td><td>persists the conversation as JSON; the name must match <code>^[A-Za-z0-9._-]+$</code></td></tr>
+              <tr><td><code>/load &lt;name&gt;</code></td><td>restores a saved conversation</td></tr>
+              <tr><td><code>/history</code></td><td>the last 10 messages</td></tr>
+              <tr><td><code>/workspace</code></td><td>install directory, workspace, CLI data directory</td></tr>
+              <tr><td><code>/model [name]</code></td><td>shows or changes the active model</td></tr>
+              <tr><td><code>/tier</code></td><td>the current specialist route from the last triage</td></tr>
+              <tr><td><code>/chat</code></td><td>the chat URL, or &ldquo;disabled&rdquo; if you did not pass <code>--chat</code></td></tr>
+              <tr><td><code>/logs</code></td><td>log file, level, content policy, rotation</td></tr>
+              <tr><td><code>/clear_logs</code></td><td>deletes run logs for the active log path</td></tr>
+              <tr><td><code>/thinking</code></td><td>toggles the reasoning panel</td></tr>
+              <tr><td><code>/verbose</code></td><td>toggles verbose progress</td></tr>
+              <tr><td><code>/exit</code></td><td>exits (alias: <code>/quit</code>)</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>Keyboard: <code>Escape</code> cancels a running turn, <code>Ctrl+C</code> clears a non-empty editor or exits when empty, and <code>Shift+Enter</code> / <code>Ctrl+Enter</code> / <code>Alt+Enter</code> insert a newline.</p>
+
+        <div class="note">
+          <span class="note-head">/quit is invisible</span>
+          <p><code>/quit</code> appears in no user-facing list at all, and <code>/clear</code> appears only in autocomplete. <code>/help</code> documents <code>/reset</code> and <code>/exit</code> instead. They work; you just will not find them by asking.</p>
+        </div>
+      </section>
+
+      <!-- ================= 05 ================= -->
+      <section id="gates">
+        <h2>The evidence gates</h2>
+
+        <p class="lede">Every authority has a native notion of evidence, and the gate is the set of obligations that must be satisfied before a candidate answer is published. The gates are deterministic checks, not another model opinion.</p>
+
+        <h3>What counts, per authority</h3>
+
+        <div class="tablewrap">
+          <table>
+            <thead><tr><th>Authority</th><th>Rigor</th><th>Evidence that closes the gate</th></tr></thead>
+            <tbody>
+              <tr><td rowspan="4"><code>MATHS</code></td><td>computational</td><td><code>python_exec</code> or <code>sympy_exec</code> with a computation check</td></tr>
+              <tr><td>derivational</td><td><code>maths_problem stage=derive</code> then <code>verify_final</code></td></tr>
+              <tr><td>proof</td><td>construction or exclusion evidence, then <code>verify_final</code></td></tr>
+              <tr><td>formal</td><td>proof rigor first, then Lean 4 verification against exact source hashes</td></tr>
+              <tr><td><code>CODE</code></td><td>&mdash;</td><td>source files, repository metadata, build and test output; source inspection plus the post-mutation diff plus native build/test</td></tr>
+              <tr><td><code>REASON</code></td><td>&mdash;</td><td>an executable Prolog derivation with proof traces, consistency checks, and assumption-dependence testing</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>The <code>REASON</code> rule is stated flatly in the system prompt: <strong>the Prolog derivation is the evidence.</strong> Not a description of one, not a summary of one.</p>
+
+        <h3>What never counts</h3>
+
+        <ul class="plain">
+          <li><strong>Model prose.</strong> Never evidence by itself. Model knowledge is not a tool result and must not be described as verified or externally sourced.</li>
+          <li><strong>The inbuilt knowledge base.</strong> <code>evo-kb.pl</code> describes the runtime&rsquo;s own tool and configuration surface. Its own header says it is &ldquo;self-knowledge only &hellip; a premise source, not evidence; no verification gate consumes it.&rdquo; The <code>query_kb</code> tool repeats the warning in its description.</li>
+          <li><strong>Search output.</strong> Discovery only. Snippets must be registered as claims with <code>ground_claims</code> before anything may reason over them, and absence from a search is not proof of non-existence.</li>
+          <li><strong>A matrix of green tool calls.</strong> Command success does not establish semantic relevance, and it is not proof that a test suite is exhaustive.</li>
+          <li><strong>A consistent knowledge base.</strong> Consistency shows the submitted model derives its conclusion consistently. It does not show the premises are true.</li>
+        </ul>
+
+        <h3>How a candidate is gated</h3>
+
+        <p>Two tiers. First, the workflow controller reports the first unmet obligation for the active authority &mdash; a missing <code>problem_spec/1</code> artifact, a declared requirement that was never validated, an SMT obligation with no definitive verdict, a Lean obligation with no machine-checked proof, a diff that was never inspected. A candidate must also reproduce runtime strings verbatim: the <code>REASON</code> answer gate requires the seven canonical headings and exact copies of the runtime&rsquo;s conclusions, assumptions, <code>[DEPENDS]</code> pairs, and requirement verdicts.</p>
+
+        <p>Second, the final candidate is evaluated once more &mdash; conflicting status declarations, dissolution approval, correctness certificates, and a regex that rejects forbidden Lean tokens: <code>sorry</code>, <code>admit</code>, <code>axiom</code>, <code>unsafe</code>, <code>native_decide</code>, <code>exact?</code>.</p>
+
+        <p>A rejection is not fatal. Feedback returns to the same loop. But rejections are bounded &mdash; after <code>EVO_MAX_VERIFICATION_REJECTIONS</code> (default <strong>4</strong>) the turn returns <code>INCOMPLETE</code>.</p>
+
+        <h3>The four terminal statuses</h3>
+
+        <div class="tablewrap">
+          <table>
+            <thead><tr><th>Status</th><th>Means</th></tr></thead>
+            <tbody>
+              <tr><td><span class="tag accent">SOLVED</span></td><td>the requested conclusion was derived and every required check passed</td></tr>
+              <tr><td><span class="tag">MAPPED</span></td><td>the task was a faithful mapping rather than a unique resolution &mdash; also the honest answer when a derivation yields no conclusions</td></tr>
+              <tr><td><span class="tag">INCOMPLETE</span></td><td>required evidence or verification is missing; this is the designed failure mode, not an error</td></tr>
+              <tr><td><span class="tag">DISSOLVED</span></td><td>a premise or framing defect invalidates the original problem &mdash; and this one costs extra (see <a href="#review">section 09</a>)</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="codewrap">
+          <button class="copy" type="button" data-copy>copy</button>
+          <div class="codeblock"><pre><span class="c"># every terminal answer carries the status the model did not award itself</span>
+[STATUS: SOLVED - authority: REASON]
+[STATUS: INCOMPLETE - authority: MATHS]
+
+<span class="c"># REASON status assignment, from the workflow prompt</span>
+<span class="c">#   all requirements fulfilled      -&gt; SOLVED</span>
+<span class="c">#   partial                         -&gt; MAPPED</span>
+<span class="c">#   none or failed                  -&gt; INCOMPLETE</span>
+<span class="c">#   premises unsound                -&gt; DISSOLVED</span></pre></div>
+        </div>
+      </section>
+
+      <!-- ================= 06 ================= -->
+      <section id="triage">
+        <h2>Semantic triage</h2>
+
+        <p class="lede">Triage is called the Evidence Router, and its design rule is the most interesting thing in the system: <strong>the model extracts meaning, the runtime chooses the route.</strong></p>
+
+        <p>A temperature-zero model run returns strict JSON and nothing else. It is a fact extractor, not a router. It reports the action, the target, the criteria the request implies, any operations requested, an explicit tier if you named one, and the proof mode. Then it stops. Model-supplied <code>phases</code> and <code>evidence_requirements</code> are ignored outright.</p>
+
+        <div class="codewrap">
+          <button class="copy" type="button" data-copy>copy</button>
+          <div class="codeblock"><pre><span class="c">// what the model may say (schema_version 2)</span>
+{
+  <span class="s">"action"</span>:  <span class="s">"prove"</span>,      <span class="c">// prove | review | diagnose | explain | how_to |</span>
+                          <span class="c">// implement | refactor | test | git | general</span>
+  <span class="s">"target"</span>:  { <span class="s">"id"</span>: ..., <span class="s">"description"</span>: ..., <span class="s">"source"</span>: ..., <span class="s">"support"</span>: ... },
+  <span class="s">"criteria"</span>: [<span class="s">"mathematical_proof"</span>],   <span class="c">// from a fixed vocabulary of 14</span>
+  <span class="s">"operations"</span>: [],                    <span class="c">// user-only attribution; never the model's request</span>
+  <span class="s">"proof_mode"</span>: <span class="s">"first_principles"</span>,
+  <span class="s">"unresolved"</span>: [], <span class="s">"alternatives"</span>: []
+}
+
+<span class="c">// what the model may NOT say</span>
+<span class="c">//   "phases": [...]        -- ignored. the route is not the model's to pick.</span>
+<span class="c">//   "tier": "MATHS"        -- only honored when the user named it explicitly.</span></pre></div>
+        </div>
+
+        <p>Targets are open-ended entity descriptions, not members of a fixed taxonomy &mdash; that was a deliberate change, so the extractor is not forced to bend a novel request into a known category. Provenance is checked: for facts attributed to the user, the context, or an observation, the quoted support must literally occur in that input.</p>
+
+        <p>That check buys traceability, and the documentation is careful about what it does not buy: <em>a matching quotation does not prove that the model interpreted it correctly.</em></p>
+
+        <h3>What Prolog does with the facts</h3>
+
+        <div class="codewrap">
+          <button class="copy" type="button" data-copy>copy</button>
+          <div class="codeblock"><pre><span class="c">% criteria map to the evidence kinds that satisfy them</span>
+criterion_evidence(argument_quality,    conceptual_derivation).
+criterion_evidence(source_inspection,   workspace_source).
+criterion_evidence(runtime_results,     runtime_behavior).
+criterion_evidence(mathematical_proof,  mathematical_proof).
+criterion_evidence(constraint_entailment, smt_entailment).
+criterion_evidence(conceptual_proof,    lean_proof).
+
+<span class="c">% obligations, then owners, then a shortest valid sequence</span>
+required(E) :- criterion(C), criterion_evidence(C, E).
+required(assumption_analysis) :- criterion(assumptions).
+required_owner(E) :- required(E), evidence_owner(E, Owner).
+
+<span class="c">% the default is REASON only when nothing else is required or named</span>
+allowed(reason) :- \+ required(_), \+ explicit(_).
+
+<span class="c">% a CODE -> MATHS -> CODE bridge must be a subsequence, not a jumble</span>
+bridge :- bridge_requested, allowed(code), allowed(maths).</pre></div>
+        </div>
+
+        <p>Selection is shortest-phase-count, and the program enumerates candidate plans <em>before</em> cutting, so a cut can never hide a competing shorter plan. The search is bounded to 7 phases. Ties break stably by Prolog term sorting and are recorded as non-unique rather than silently resolved.</p>
+
+        <p>Planning optimizes nothing else. Not latency, not token cost, not model confidence, not expected success.</p>
+
+        <h3>Routing statuses</h3>
+
+        <div class="tablewrap">
+          <table>
+            <thead><tr><th>Status</th><th>When</th></tr></thead>
+            <tbody>
+              <tr><td><code>resolved</code></td><td>a valid plan exists, evidence obligations exist, and no unresolved, unsupported, or alternative flags remain</td></tr>
+              <tr><td><code>needs_observation</code></td><td>unresolved references, unsupported criteria, or no derived obligations at all</td></tr>
+              <tr><td><code>ambiguous</code></td><td>competing interpretations were reported</td></tr>
+              <tr><td><code>inconsistent</code></td><td>bridge requirements are unsupportable, or no valid sequence exists within the bound</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>A plan can be <code>resolved</code> and still carry <code>unique: false</code>. Uniqueness and resolution are independent.</p>
+
+        <h3>The certificate</h3>
+
+        <p>Every triage emits a certificate carrying the routing status, the extracted semantics, the plan, the evidence requirements and coverage, assumptions, the proof trace, and a SHA-256 of its own contents. Its engine is <code>lite_reason_prolog</code>, or <code>degraded_deterministic</code> if extraction or the Prolog call failed &mdash; in which case routing falls back to <code>needs_observation</code> and missing intent is <em>not</em> reconstructed from keywords.</p>
+
+        <div class="note">
+          <span class="note-head">What the certificate does not mean</span>
+          <p>Coverage means the plan contains an authority capable of owning an obligation. It does not mean evidence was collected or validated. The certificate is a planning record, not a proof of correct intent interpretation; its hash identifies the contents, it does not establish their truth.</p>
+        </div>
+
+        <p>When routing is unresolved, or when the model emits <code>[REASSESS TRIAGE]</code> on its own, the plan can be reassessed &mdash; at most three times per turn. Reassessment requires new successful observations after the first attempt, retains completed phases and the certificate hash, and freezes mutation and publish permissions. It cannot escape into an authority that was never planned.</p>
+      </section>
+
+      <!-- ================= 07 ================= -->
+      <section id="strategies">
+        <h2>Reasoning strategies</h2>
+
+        <p class="lede">Behind a flag that defaults to off sits a portfolio of reasoning operators, each implemented as a Prolog search over an explicit finite model. It is the most experimental part of the system, and the code says so.</p>
+
+        <div class="codewrap">
+          <button class="copy" type="button" data-copy>copy</button>
+          <div class="codeblock is-accent"><pre><span class="c"># the only two accepted values; anything else throws at startup</span>
+EVO_REASON_STRATEGY_MODE=on
+EVO_REASON_STRATEGY_MODE=off    <span class="c"># default</span></pre></div>
+        </div>
+
+        <p>With the portfolio off, the <code>reason_strategy</code> tool is not even registered, and the controller fails with <code>Strategy portfolio is off (EVO_REASON_STRATEGY_MODE=off).</code> The tool takes <code>describe</code>, <code>status</code>, and <code>solve</code>.</p>
+
+        <h3>The operators</h3>
+
+        <p>Operators are organized into five layers &mdash; <em>reformulate</em>, <em>derive</em>, <em>explore</em>, <em>complexity</em>, <em>verify</em> &mdash; and the available set includes deduction, forward chaining, working backwards, constraint satisfaction, counterexample search, optimization, generate-and-test, reduction, abstraction, analogy, recursive decomposition, divide-and-conquer, dynamic programming, search, means-ends analysis, greedy, randomized exploration, hypothesis-test-revise, and abduction.</p>
+
+        <p>Seven operators are registered but explicitly <strong>unavailable</strong>, and the distinction is enforced in the registry rather than left to documentation: <code>induction</code>, <code>causal_reasoning</code>, <code>simulation</code>, <code>adversarial_reasoning</code>, <code>invariant_discovery</code>, <code>relaxation</code>, <code>approximation</code>.</p>
+
+        <h3>Selection is deterministic</h3>
+
+        <div class="tablewrap">
+          <table>
+            <thead><tr><th>Problem shape</th><th>Default operator</th></tr></thead>
+            <tbody>
+              <tr><td><code>logic</code></td><td><code>working_backwards</code></td></tr>
+              <tr><td><code>graph</code></td><td><code>dynamic_programming</code></td></tr>
+              <tr><td><code>hypotheses</code></td><td><code>hypothesis_test_revise</code></td></tr>
+              <tr><td><code>all</code></td><td><code>recursive_decomposition</code></td></tr>
+              <tr><td>has a <code>claim</code></td><td><code>counterexample_search</code></td></tr>
+              <tr><td>has an <code>objective</code></td><td><code>optimization</code></td></tr>
+              <tr><td>anything else</td><td><code>constraint_satisfaction</code></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p><code>strategy=auto</code> uses that table; naming an operator directly requires it to be eligible. Repeating an unchanged attempt is blocked &mdash; <em>&ldquo;Repeated unchanged strategy attempt blocked; inspect its result or materially revise the problem.&rdquo;</em> Budgets are shared and reserved up front: 20,000 work units, 24 attempts, depth 20, 10 seconds.</p>
+
+        <h3>Outcomes that refuse to overclaim</h3>
+
+        <p>An attempt reports one of <code>proved</code>, <code>refuted</code>, <code>feasible</code>, <code>optimal</code>, <code>plausible_hypothesis</code>, <code>infeasible</code>, or <code>unknown</code>, and always carries the scope <code>submitted_finite_model</code>. Results are validated outside the solver &mdash; witnesses are rechecked against the original domains, <code>proved</code> requires exhaustive search, and a decomposition only counts as proved if every child was accepted. An <code>unknown</code> outcome becomes <code>inconclusive</code> with the reason kept intact: <em>&ldquo;No conclusion followed within the submitted finite model; uncertainty retained.&rdquo;</em></p>
+
+        <p>The harness narrates its own limits in the code, which is unusual and worth quoting:</p>
+
+        <ul class="plain">
+          <li><em>&ldquo;Positive Horn closure; failure to derive does not prove negation.&rdquo;</em></li>
+          <li><em>&ldquo;No feasible assignment found. Inconsistent premises do not prove a claim.&rdquo;</em></li>
+          <li><em>&ldquo;Missing predictions are not confirmation. Suggested tests have not been performed.&rdquo;</em></li>
+          <li><em>&ldquo;a greedy dead end is not proof of impossibility&rdquo;</em></li>
+        </ul>
+
+        <div class="note">
+          <span class="note-head">Why this ships off</span>
+          <p>The design plan is explicit that promotion requires a predeclared, task-stratified improvement target at an agreed cost ceiling, and that publishing a taxonomy or adding prompt instructions does not satisfy it. Until then the portfolio stays behind <code>EVO_REASON_STRATEGY_MODE=on</code>. The tool&rsquo;s own contract says results &ldquo;never establish premise truth or model adequacy.&rdquo;</p>
+        </div>
+      </section>
+
+      <!-- ================= 08 ================= -->
+      <section id="prolog">
+        <h2>Prolog and the knowledge base</h2>
+
+        <p class="lede">SWI-Prolog is not a library call here &mdash; it is the symbolic layer, and the runtime owns the harness so the model cannot replace it.</p>
+
+        <p>Four <code>.pl</code> assets ship with the runtime, each stamped <em>&ldquo;do not edit or redefine&rdquo;</em>:</p>
+
+        <div class="tablewrap">
+          <table>
+            <thead><tr><th>File</th><th>Role</th></tr></thead>
+            <tbody>
+              <tr><td><code>reason-harness.pl</code></td><td>appended to every <code>prolog_exec</code> call; provides the proof, consistency, dependence-testing, and requirement-reporting predicates</td></tr>
+              <tr><td><code>claim-contract.pl</code></td><td>injected after <code>ground_claims</code> to bind grounded premises to their sources</td></tr>
+              <tr><td><code>strategy-harness.pl</code></td><td>the portfolio solver; its input is JSON data, never executable model-supplied Prolog</td></tr>
+              <tr><td><code>evo-kb.pl</code></td><td>the generated self-knowledge base</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>For <code>prolog_exec</code> the model writes only a declarative knowledge base; the harness supplies everything else, and each call is isolated. Resource limits are deliberate: a 256&nbsp;MB Prolog stack, a 25-second Prolog execution limit, and a 30-second outer process timeout with cancellation support.</p>
+
+        <p>The REASON workflow runs R1 SETUP through R6 ANSWER, and the step whose failure is most instructive is R4, the assumption-dependence test: the harness retracts and reasserts each assumption to see which conclusions actually depend on it. The system prompt warns that an assumption declared as a static rule rather than a dynamic fact <em>survives retraction and makes the test useless</em> &mdash; a silent way to pass a check that did nothing.</p>
+
+        <h3>The knowledge base is not evidence</h3>
+
+        <p>This is the distinction most likely to be misread, so the codebase states it in three places. <code>evo-kb.pl</code> is <strong>self-knowledge</strong>: it describes the runtime&rsquo;s own tools and configuration. Its header says it is &ldquo;a premise source, not evidence; no verification gate consumes it.&rdquo; The <code>query_kb</code> tool description repeats that the self-knowledge &ldquo;is not verification evidence.&rdquo; And the knowledge base&rsquo;s own status predicate reports its size &mdash; at generation time, 74 tools and 75 configuration keys.</p>
+
+        <p>Two other query surfaces exist and are easy to confuse with it. <code>query_kb</code> exposes session predicates such as <code>recent_messages/2</code>, <code>messages_about/2</code>, <code>tools_used_list/1</code>, and <code>search_conversation/2</code>. <code>query_proof_kb</code> exposes the proof ledger: <code>verified_lemmas/1</code>, <code>proof_errors/1</code>, <code>goal_snapshots/1</code>, <code>tactics_for_goal/2</code>, <code>errors_for_goal/2</code>, <code>similar_to/2</code>.</p>
+
+        <div class="note">
+          <span class="note-head">The honest caveat on the symbolic layer</span>
+          <p>Prolog is deterministic given the extracted facts. Its largest remaining vulnerability is a plausible but incorrect semantic extraction: if the model supplies a wrong interpretation or omits an important criterion, Prolog will produce a valid plan for the wrong question. Determinism downstream does not repair a misunderstanding upstream.</p>
+        </div>
+      </section>
+
+      <!-- ================= 09 ================= -->
+      <section id="review">
+        <h2>Independent review and dissolution</h2>
+
+        <p class="lede"><code>DISSOLVED</code> is the one status a model cannot award itself. Claiming a request is unanswerable is the most consequential thing an agent can say, so it costs an extra review with its own evidence requirements.</p>
+
+        <p>The rule: a status label, a consistent Prolog knowledge base, or a model-authored list of fulfilled requirements cannot establish that the user&rsquo;s request is unanswerable. When a candidate declares <code>DISSOLVED</code>, the runtime makes a separate temperature-zero model call <strong>with no tools</strong>, handing it the original request, the candidate, the reference context, and the current phase&rsquo;s tool records.</p>
+
+        <p>Approval is not a vibe. Every one of these is validated in code before the status is accepted:</p>
+
+        <ul class="plain">
+          <li><code>approved === true</code>, and <code>request_preserved</code> &mdash; the reviewer is judging the request that was actually asked</li>
+          <li><code>whole_request_blocked</code> and <code>blocking_demonstrated</code> &mdash; the whole request, not a convenient part of it</li>
+          <li><code>reasonable_repair_available === false</code> &mdash; no reasonable interpretation salvages it</li>
+          <li>an empty <code>unsupported_assumptions</code> list</li>
+          <li>a nonempty <code>premise_quote</code> that <em>literally occurs</em> in the original request</li>
+          <li>at least one interpretation, every one of them marked <code>answerable === false</code></li>
+          <li>exact quotes of tool output &mdash; failed, truncated, or non-matching citations invalidate the approval</li>
+        </ul>
+
+        <p>The approval is bound by SHA-256 to the request, the candidate, and the full current-phase tool snapshot. A later candidate cannot reuse an earlier approval. A bare <code>DISSOLVED</code> with no approval is rejected with a message that says exactly why:</p>
+
+        <div class="codewrap">
+          <button class="copy" type="button" data-copy>copy</button>
+          <div class="codeblock is-accent"><pre>[SYSTEM] DISSOLVED requires independent review of the original request,
+blocking evidence, and reasonable interpretations. A status label or
+successful derivation alone cannot authorize dissolution.</pre></div>
+        </div>
+
+        <p>The reviewer sees the latest 12 tool records from the current phase, each truncated to 12,000 characters. The request and the candidate are never truncated. A truncated record cannot serve as an accepted citation, which closes the obvious trick of citing something the reviewer could not read.</p>
+
+        <div class="note">
+          <span class="note-head">This is a challenge, not a second opinion from a stranger</span>
+          <p>The review is a separate call to the <em>configured</em> model &mdash; not an independently trained verifier &mdash; so it can share the generating model&rsquo;s biases. Quote matching validates provenance, not semantic entailment or source truth, and a mistaken review can still misclassify a genuine defect. What the gate adds is an explicit challenge that fails closed when review evidence is missing. It does not establish completeness of all possible interpretations, and it is not a general semantic audit of every answer.</p>
+        </div>
+      </section>
+
+      <!-- ================= 10 ================= -->
+      <section id="tools">
+        <h2>The tool surface</h2>
+
+        <p class="lede">74 tools, generated from the live registry rather than written by hand, so the documentation and the code cannot drift.</p>
+
+        <div class="tablewrap">
+          <table>
+            <thead><tr><th>Group</th><th class="num">Count</th><th>Examples</th></tr></thead>
+            <tbody>
+              <tr><td>Core</td><td class="num">42</td><td><code>prolog_exec</code>, <code>smt_entail</code>, <code>sympy_exec</code>, <code>lean_prove</code>, <code>prove_problem</code>, <code>ground_claims</code>, <code>evo_decompose</code>, <code>pdf_read</code></td></tr>
+              <tr><td>Web and HTTP</td><td class="num">5</td><td><code>web_search</code>, <code>web_browse</code>, <code>github</code>, <code>gmail</code>, <code>x_twitter</code></td></tr>
+              <tr><td>CODE workspace</td><td class="num">25</td><td><code>read</code>, <code>ls</code>, <code>grep</code>, <code>symbols</code>, <code>edit</code>, <code>undo</code>, <code>bash</code>, <code>verify_plan</code>, <code>publish</code>, <code>git</code></td></tr>
+              <tr><td>Subagents</td><td class="num">2</td><td><code>evo_subagent</code>, <code>formal_worker</code></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>The stated design intent is that the tools carry their own discipline in their descriptions. A few worth reading closely:</p>
+
+        <ul class="plain">
+          <li><code>git</code> is <strong>strictly read-only</strong> inspection with operation-specific fields. Arbitrary Git arguments are not accepted, so there is no argument through which to smuggle a write.</li>
+          <li><code>code_sandbox_run</code> runs in an ephemeral OS sandbox with <strong>network disabled by default</strong>; enabling it requires an explicit user request.</li>
+          <li><code>smt_entail</code> is a deterministic verifier over a restricted grammar (QF_LIA, QF_LRA, QF_LIRA, QF_Bool) with four verdicts: <code>PROVED</code>, <code>REFUTED</code>, <code>UNDERDETERMINED</code>, <code>INCONSISTENT</code>.</li>
+          <li><code>x_twitter</code> exposes 70+ operations, and every write requires <code>confirm=true</code> plus user credentials.</li>
+        </ul>
+
+        <div class="note">
+          <span class="note-head">Legacy names in the README</span>
+          <p>The README&rsquo;s CODE capability table still lists <code>code_list</code>, <code>code_read</code>, <code>code_search</code>, <code>code_git</code>, <code>code_run</code>, and friends. None of those exist in the registry &mdash; the real names are <code>ls</code>, <code>read</code>, <code>grep</code>, <code>git</code>, <code>bash</code>. The README also lists <code>camera_capture</code>, which is not a registered tool at all. When the two disagree, <code>docs/generated/tools.md</code> is the one generated from the code.</p>
+        </div>
+      </section>
+
+      <!-- ================= 11 ================= -->
+      <section id="workspace">
+        <h2>The CODE workspace</h2>
+
+        <p class="lede">CODE is the authority where evidence is easiest to fake and easiest to check, so the workflow is built around one question: what did you actually observe, and what did you actually run?</p>
+
+        <p>The workflow is K1 INSPECT through K5 ANSWER, and the gate consumes three things: that the sources were inspected, that the post-mutation diff was inspected, and that a native build or test actually ran. A directory listing, a web result, a scratch pad, a subagent&rsquo;s answer, or a Prolog fact are all explicitly <em>not</em> exact-source evidence for CODE.</p>
+
+        <div class="codewrap">
+          <button class="copy" type="button" data-copy>copy</button>
+          <div class="codeblock"><pre>read / ls / grep / symbols     <span class="c"># inspect &mdash; the evidence base</span>
+edit                            <span class="c"># atomic, revision-checked; replace_text never truncates</span>
+undo                            <span class="c"># revert</span>
+bash                            <span class="c"># verification commands set codeVerified=true</span>
+verify_plan                     <span class="c"># plan checks must be verified</span>
+code_sandbox_run                <span class="c"># ephemeral OS sandbox, network off by default</span>
+publish                         <span class="c"># gated on the above</span></pre></div>
+        </div>
+
+        <p><code>edit</code> is revision-checked and atomic, and its <code>replace_text</code> mode is documented as the preferred way to edit precisely because it never truncates the file. Destructive <code>bash</code> commands are refused. Verification commands &mdash; test, check, build, lint &mdash; are the ones that set <code>codeVerified</code>.</p>
+
+        <h3>Where CODE evidence stops</h3>
+
+        <p>The CODE authority documentation is candid about the edges of its own guarantee, and two of them matter if you are going to rely on this:</p>
+
+        <ul class="plain">
+          <li><strong>No guarantee against concurrent writes after the last observation, and no proof that a test suite is exhaustive.</strong> The diff you inspected is the diff that existed when it was inspected.</li>
+          <li><strong>A Lean proof about a model of your source is not a proof of your source.</strong> That evidence is tagged <code>assurance: source_linked_model_proof</code> with <code>implementationBound: false</code>, and an implementation-bound formal request <em>cannot complete or publish</em> on it. Closing that gap needs a trusted source-to-model refinement checker &mdash; not another model assertion.</li>
+        </ul>
+
+        <p>Source-anchored review notes remain an optional review ledger, explicitly not a completeness certificate.</p>
+      </section>
+
+      <!-- ================= 12 ================= -->
+      <section id="formal">
+        <h2>Formal and mathematical work</h2>
+
+        <p class="lede">MATHS is the deepest authority, and the one where the system is most insistent that a proof about the wrong statement is worse than no proof at all.</p>
+
+        <p>The workflow runs M0 START, M1 MODEL, M2 EXPLORE, M3 DERIVE, M4 VERIFY, M5 ANSWER. Rigor determines what closes it, and <strong>formal</strong> rigor is two-phase: the proof phase runs M1&ndash;M4 to produce a frozen mathematical certificate, and only then does the Lean extension phase begin &mdash; <code>prove_problem start</code>, a statement skeleton, then either a direct track or a decomposition track, ending in <code>verify_final</code>.</p>
+
+        <p>The gate rejects the standard ways of faking a Lean proof. A regex refuses <code>sorry</code>, <code>admit</code>, <code>axiom</code>, <code>unsafe</code>, <code>native_decide</code>, and <code>exact?</code>. Evidence is bound to exact source hashes. A failed proof route is deferred and replanned &mdash; never silently treated as proved.</p>
+
+        <p>If the formal phase times out, the frozen mathematical certificate is still rendered as the answer, and only the Lean formalization is marked incomplete. That is a deliberate separation: the maths was done, the mechanization was not.</p>
+
+        <h3>Formal recovery</h3>
+
+        <p>When a Lean proof stalls, recovery is guided rather than blind. The controller renders its allowed next actions as workflow guidance, and a <code>frontier_plan</code> accepts Lean identifiers only &mdash; pending lemmas must be registered with an exact statement and dependencies before they can be probed or delegated, and registration rejects unknown dependencies and cycles.</p>
+
+        <p>Failed executions and probes increment the registered frontier&rsquo;s attempt count; missing arguments and protocol errors do not. At <code>EVO_AUTO_SPLIT_THRESHOLD</code> (default <strong>3</strong>) the controller suggests specialist workers, then explicit decomposition.</p>
+
+        <div class="note">
+          <span class="note-head">What formal recovery does not do</span>
+          <p>A generic type mismatch is not treated as evidence that an equality is reversed, and resolution statistics are not inferred merely because a later candidate succeeded. The checks establish integration behavior &mdash; not a measured improvement in model success rate or runtime. And a constructed-proof guard is a conservative source-level check, not a Lean proof-term provenance verifier: it does not establish resistance to arbitrary aliasing, tactic-generated wrappers, or semantic reformulation.</p>
+        </div>
+      </section>
+
+      <!-- ================= 13 ================= -->
+      <section id="config">
+        <h2>Configuration</h2>
+
+        <p class="lede">Around 75 environment variables, all documented in <code>.env.example</code> and in the generated configuration reference. Precedence is constructor overrides, then process environment, then a <code>.env</code> in the source directory.</p>
+
+        <div class="tablewrap">
+          <table>
+            <thead><tr><th>Group</th><th>Representative variables</th></tr></thead>
+            <tbody>
+              <tr><td>Model provider</td><td><code>EVO_LLM_PROVIDER</code> (<code>deepseek</code>), <code>DEEPSEEK_API_KEY</code>, <code>DEEPSEEK_MODEL</code>, <code>DEEPSEEK_REASONING_EFFORT</code> (<code>high</code>), <code>DEEPSEEK_THINKING_MODE</code> (<code>enabled</code>), <code>TOGETHER_API_KEY</code>, <code>MAX_TOKENS</code> (8192)</td></tr>
+              <tr><td>Turn control</td><td><code>EVO_MAX_TURN_MS</code> (1800000), <code>EVO_TURN_FINALIZATION_RESERVE_MS</code> (120000), <code>EVO_MAX_NO_PROGRESS_FAILURES</code> (2), <code>EVO_MAX_RETRIES</code> (4), <code>EVO_MAX_VERIFICATION_REJECTIONS</code> (4)</td></tr>
+              <tr><td>Formal</td><td><code>LEAN_PROJECT_DIR</code>, <code>LEAN_TIMEOUT_MS</code> (120000), <code>LEAN_MAX_CONCURRENCY</code> (2), <code>EVO_AUTO_SPLIT_THRESHOLD</code> (3), <code>EVO_REQUIRE_LEAN</code> (false)</td></tr>
+              <tr><td>Paths</td><td><code>EVO_ARTIFACT_ROOT</code> (<code>~/tmp/evo-ai</code>; <code>/tmp/evo-ai</code> on the server), <code>EVO_WORKSPACE_ROOT</code>, <code>EVO_EXTRA_WORKSPACES</code>, <code>PYTHON_PATH</code>, <code>SWIPL_PATH</code></td></tr>
+              <tr><td>Logging</td><td><code>EVO_LOG_LEVEL</code> (<code>info</code>), <code>EVO_LOG_PATH</code>, <code>EVO_LOG_MAX_BYTES</code>, <code>EVO_LOG_MAX_FILES</code>, <code>EVO_LOG_INCLUDE_CONTENT</code> (false)</td></tr>
+              <tr><td>Public server</td><td><code>PORT</code>, <code>PUBLIC_BASE_URL</code>, <code>JWT_SECRET</code>, <code>DATABASE_URL</code>, <code>GITHUB_CLIENT_ID</code>, <code>GOOGLE_CLIENT_ID</code>, <code>EVO_ALLOWED_USERS</code></td></tr>
+              <tr><td>Quotas</td><td><code>EVO_DAILY_TURN_QUOTAS_ENABLED</code> (true), <code>EVO_TIER_0_DAILY_TURNS</code> (25), <code>EVO_TIER_1_DAILY_TURNS</code> (200), <code>EVO_TIER_2_DAILY_TURNS</code> (10000), <code>EVO_TEST_TIER_TTL_DAYS</code> (14)</td></tr>
+              <tr><td>Reasoning</td><td><code>EVO_REASON_STRATEGY_MODE</code> (<code>off</code>)</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Parsing behavior worth knowing</h3>
+
+        <ul class="plain">
+          <li><strong>Integers ignore zero and negatives.</strong> The parser requires a value greater than zero and otherwise falls back to the default &mdash; so <code>EVO_MAX_TURN_MS=0</code> does not mean &ldquo;unlimited&rdquo;, it silently means 1,800,000.</li>
+          <li><strong>Booleans are permissive.</strong> Anything not in <code>disabled</code>, <code>off</code>, <code>false</code>, <code>0</code>, or <code>no</code> reads as true. Setting a variable to a value you did not intend can enable a feature rather than disable it.</li>
+          <li><strong><code>EVO_REASON_STRATEGY_MODE</code> is strict</strong>, and throws on anything that is not exactly <code>on</code> or <code>off</code> &mdash; the opposite of the boolean rule above.</li>
+        </ul>
+
+        <div class="note">
+          <span class="note-head">Undocumented variables ship silently</span>
+          <p><code>EVO_RG_PATH</code>, <code>X_API_BEARER_TOKEN</code>, and the legacy <code>TWITTER_*</code> aliases are read by the code but appear in no documentation. The reason is a gap in the coverage validator: it scans a fixed list of seven files and does not include <code>workspace-tools.ts</code> or <code>x-tools.ts</code>, so variables read there never fail <code>npm run docs:check</code>.</p>
+        </div>
+
+        <p>One documented default deserves a callout rather than a footnote: the Gmail integration ships a <strong>non-placeholder default account address</strong> in <code>.env.example</code> and in the generated configuration reference. Set <code>GMAIL_ACCOUNT</code> explicitly rather than relying on the default.</p>
+      </section>
+
+      <!-- ================= 14 ================= -->
+      <section id="gotchas">
+        <h2>Gotchas</h2>
+
+        <ul class="gotchas">
+          <li><b>--no-stream does nothing</b>The flag is parsed into a field that is never read again. The <code>--help</code> text (&ldquo;Disable streamed one-shot output&rdquo;) is misleading; the README correctly calls it an accepted compatibility flag.</li>
+          <li><b>--extra-workspace is hidden</b>A real, repeatable flag that appears in neither <code>--help</code> nor the README. Only its environment equivalent, <code>EVO_EXTRA_WORKSPACES</code>, is documented.</li>
+          <li><b>--chat-port turns chat on</b>Passing a port implicitly enables <code>--chat</code> and opens a browser to a token-bearing localhost URL.</li>
+          <li><b>The log path documented in the README is wrong</b>The README says logs default under <code>.evo/logs/</code>. The code defaults to <code>&lt;EVO_ARTIFACT_ROOT&gt;/logs/evo.log</code>. <code>EVO_LOG_PATH</code> overrides both.</li>
+          <li><b>No --version, no --</b>There is no version flag and no argument terminator. Any unrecognized <code>-x</code> throws.</li>
+          <li><b>EVO_REQUIRE_LEAN is a startup gate, not a runtime one</b>It makes the public server fail to boot when the Lean smoke proof cannot run. Without it, the server deliberately continues with the Lean tools disabled.</li>
+          <li><b>Missing JWT_SECRET is a hard boot failure</b>The server refuses to start, and the error message explains the alternative: every session token would be forgeable.</li>
+          <li><b>code_worker is a stub</b>It is registered as an unavailable compatibility adapter and tells you to use <code>evo_subagent</code> instead.</li>
+          <li><b>Documented tools may be unavailable</b>The docs generator hard-codes the strategy portfolio as enabled so it can document the full tool surface. At the default <code>EVO_REASON_STRATEGY_MODE=off</code>, <code>reason_strategy</code> is not registered at all.</li>
+        </ul>
+      </section>
+
+      <!-- ================= 15 ================= -->
+      <section id="limits">
+        <h2>What it does not claim</h2>
+
+        <p class="lede">The most valuable documentation in this project is the part that argues against trusting it. Collected here, because a field reference that only lists capabilities is a sales page.</p>
+
+        <h3>The gate verifies consistency, not truth</h3>
+
+        <p>The <code>REASON</code> authority verifies that a conclusion follows from the premises it was given. It does not verify the truth or the provenance of those premises. Under conversational pressure the model can confabulate under induced coherence pressure &mdash; and because the verifier checks consistency <em>with the chosen premises</em>, a confabulation passes the gate as <code>SOLVED</code>.</p>
+
+        <p>A 28-turn stress test named five failure modes: circular premise, fact-laundering, user-premise assimilation, history confabulation, and prompted-only insight. The first mitigation was implemented and tested live, and the result is reported with unusual honesty: it forced a non-circular derivation, and <em>&ldquo;the confabulation did not disappear &mdash; it relocated&rdquo;</em>, moving the contested claim from an observation into an assumption and coining a fake epistemic kind. The conclusion recorded in the roadmap is that it is <em>&ldquo;a proven point-fix; it is insufficient alone.&rdquo;</em> The second mitigation shipped only as an advisory slice &mdash; it emits a reversal signal and does <strong>not</strong> reject the answer, pending a false-positive rate on real runs. Binding is deferred.</p>
+
+        <h3>Triage is a planning record</h3>
+
+        <p>The router&rsquo;s determinism is downstream of a model extraction, and that extraction is the weak link. Substring provenance checks establish that a quote occurred, not that it was understood. The certificate hash identifies its contents; it does not establish their truth. A passing evaluation run is a small regression sample, not a guarantee of intent understanding.</p>
+
+        <h3>Identity matching has a known hole</h3>
+
+        <p>Three different normalization functions are used in different gates &mdash; <code>normalizeExact</code>, <code>canonicalIdentity</code>, and <code>normalizeForComparison</code> &mdash; with the result that the <em>same</em> drift can be tolerated by one gate and rejected by another. A fuzzy-matching second layer is designed but not implemented, and the documented decision is to keep it off the binding path until its false-accept rate has been measured.</p>
+
+        <h3>The reviewer shares the model&rsquo;s biases</h3>
+
+        <p>Dissolution review is another call to the same configured model, not an independent verifier. It adds an explicit challenge and fails closed on missing evidence; it does not establish that all reasonable interpretations were considered.</p>
+
+        <h3>The portfolio is unproven, and says so</h3>
+
+        <p>The reasoning strategy portfolio defaults to off and remains gated on promotion criteria that have not been met. Seven operators are registered as unavailable. Results are scoped to a submitted finite model and never establish premise truth or model adequacy.</p>
+
+        <h3>Formal work is integration-tested, not benchmarked</h3>
+
+        <p>Formal recovery establishes that the mechanisms connect correctly &mdash; not that the model succeeds more often or runs faster. The constructed-proof guard is a conservative source-level check, and the project states plainly that it does not establish resistance to aliasing, tactic-generated wrappers, or semantic reformulation.</p>
+
+        <div class="note">
+          <span class="note-head">The sentence the project keeps repeating</span>
+          <p>SYMEVO improves the traceability and internal validity of an answer. It does not turn an LLM into an oracle. Source truth, source quality, and the correctness of translating natural language into a formal model remain part of the trust boundary &mdash; and no amount of Prolog moves them out of it.</p>
+        </div>
+      </section>
+
+      <footer>
+        <span>Verified against @evo-ai/agent 2.0.0</span>
+        <span>Tool counts, status strings, and gate conditions are read from the source at main; the candid limitations are the project&rsquo;s own documented admissions, quoted rather than paraphrased</span>
+      </footer>
+
+    </main>
+  </div>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  // ---- copy buttons ----
+  document.querySelectorAll(".codewrap").forEach(function (wrap) {
+    var btn = wrap.querySelector("[data-copy]");
+    if (!btn) return;
+    btn.addEventListener("click", function () {
+      var pre = wrap.querySelector("pre");
+      if (!pre) return;
+      var text = pre.innerText;
+      var done = function (ok) {
+        btn.textContent = ok ? "copied" : "select";
+        setTimeout(function () { btn.textContent = "copy"; }, 1400);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(
+          function () { done(true); },
+          function () {
+            selectNode(pre);
+            done(false);
+          }
+        );
+      } else {
+        selectNode(pre);
+        done(false);
+      }
+    });
+  });
+
+  function selectNode(node) {
+    try {
+      var r = document.createRange();
+      r.selectNodeContents(node);
+      var s = window.getSelection();
+      s.removeAllRanges();
+      s.addRange(r);
+    } catch (e) { /* selection unavailable; text stays readable */ }
+  }
+
+  // ---- active section in the rail ----
+  var links = Array.prototype.slice.call(document.querySelectorAll("nav.rail a"));
+  var targets = links
+    .map(function (a) { return document.getElementById(a.getAttribute("href").slice(1)); })
+    .filter(Boolean);
+  if (!targets.length || !("IntersectionObserver" in window)) return;
+
+  var visible = new Set();
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (e.isIntersecting) visible.add(e.target.id);
+      else visible.delete(e.target.id);
+    });
+    var current = null;
+    for (var i = 0; i < targets.length; i++) {
+      if (visible.has(targets[i].id)) { current = targets[i].id; break; }
+    }
+    links.forEach(function (a) {
+      a.classList.toggle("on", current !== null && a.getAttribute("href") === "#" + current);
+    });
+  }, { rootMargin: "-10% 0px -70% 0px", threshold: 0 });
+
+  targets.forEach(function (t) { io.observe(t); });
+})();
+</script>
+</body>
+</html>

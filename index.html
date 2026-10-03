@@ -513,7 +513,13 @@
       <section id="fits">
         <h2>Where SYMEVO fits</h2>
 
-        <p class="lede">This is a verification orchestrator, not a smarter chatbot. The three authorities are the clearest statement of what it is for, and they come with a filter.</p>
+        <p class="lede">SYMEVO is a verification orchestrator, and the orchestration is the unit of capability &mdash; not the individual model call. A single request can be routed across authorities, and obligations cross between them.</p>
+
+        <p>Two examples, both from the policy layer. A <code>CODE</code> claim of class <code>constraint</code> is discharged by SMT &mdash; the same entailment authority <code>REASON</code> uses, which is why the SMT controller has to stay reachable from CODE. And the CODE&harr;MATHS bridge runs <code>create_manifest</code> in CODE, proves the exact claim with <code>maths_problem</code>, then accepts the runtime-recorded certificate back in CODE. Neither capability belongs to any single authority. Both are properties of the composition, and neither is reducible to one of its parts.</p>
+
+        <p>That is the part worth being precise about. A model call produces text; the orchestration produces a <em>decided</em> answer, and it can do so because routing, obligation, permission, binding, and verdict are all formal &mdash; which is what lets independently verified results be composed into something no single authority, and no single call, could establish on its own. What the system can reach is a function of how its parts are joined, not of the model alone.</p>
+
+        <p>The three authorities are the clearest statement of what it is for, and they come with a filter.</p>
 
         <h3>The filter</h3>
 
@@ -542,7 +548,7 @@
           <li><strong>Open-ended writing.</strong> There is no gate for prose quality, and no authority owns it.</li>
           <li><strong>Facts you need to be true.</strong> SYMEVO can ground a claim in a source you opened, but it does not verify that the source is right. Search results are discovery only.</li>
           <li><strong>Latency-critical paths.</strong> A turn runs a classifier, a Prolog process, an authority workflow, and a verifier. There is a per-turn deadline (default 30 minutes) and it is not a small number.</li>
-          <li><strong>Anything where you want the model's own judgement trusted.</strong> That is the thing the architecture is built to not do.</li>
+          <li><strong>Anything where you want the model's own judgement trusted.</strong> That is the thing the architecture is built not to do.</li>
         </ul>
 
         <div class="note">

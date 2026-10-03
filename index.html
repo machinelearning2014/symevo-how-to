@@ -406,7 +406,7 @@
         <li><a href="#gates"><span class="n">05</span>The evidence gates</a></li>
         <li><a href="#triage"><span class="n">06</span>Semantic triage</a></li>
         <li><a href="#strategies"><span class="n">07</span>Reasoning strategies</a></li>
-        <li><a href="#prolog"><span class="n">08</span>Prolog and the knowledge base</a></li>
+        <li><a href="#prolog"><span class="n">08</span>Prolog and the derivation engines</a></li>
         <li><a href="#review"><span class="n">09</span>Independent review</a></li>
         <li><a href="#tools"><span class="n">10</span>The tool surface</a></li>
         <li><a href="#workspace"><span class="n">11</span>The CODE workspace</a></li>
@@ -537,7 +537,7 @@
             <tbody>
               <tr><td><code>MATHS</code></td><td>a computation, a derivation with a frozen certificate, a constructed proof, or exact Lean source hashes</td><td>a model asserting a result it may have hallucinated</td></tr>
               <tr><td><code>CODE</code></td><td>source inspection, the post-mutation diff, and native build/test output</td><td>a patch that looks right and was never run</td></tr>
-              <tr><td><code>REASON</code></td><td>an executable Prolog derivation with proof traces, consistency checks, and assumption-dependence testing</td><td>a plausible argument with no stated premises</td></tr>
+              <tr><td><code>REASON</code></td><td>an executable Prolog derivation with proof traces, consistency checks, and assumption-dependence testing &mdash; plus, where the request needs them, a definitive SMT verdict or a machine-checked Lean proof</td><td>a plausible argument with no stated premises</td></tr>
             </tbody>
           </table>
         </div>
@@ -695,7 +695,7 @@ node dist/cli.js <span class="s">"..."</span>         <span class="c"># the same
               <tr><td rowspan="3"><code>CODE</code></td><td>verification level: <code>standard</code></td><td>source files, repository metadata, build and test output; source inspection plus the post-mutation diff plus native build/test</td></tr>
               <tr><td>verification level: <code>mathematical</code></td><td>the same, plus a source-bound verification manifest</td></tr>
               <tr><td>verification level: <code>implementation_bound_formal</code></td><td>the same, plus mechanically verified source-to-model refinement &mdash; which does not exist yet, so such a request cannot complete on a model proof</td></tr>
-              <tr><td><code>REASON</code></td><td>&mdash;</td><td>an executable Prolog derivation with proof traces, consistency checks, and assumption-dependence testing</td></tr>
+              <tr><td><code>REASON</code></td><td>&mdash;</td><td>an executable Prolog derivation with proof traces, consistency checks, and assumption-dependence testing; where triage requires them, also a definitive SMT verdict or a machine-checked Lean proof, each bound to the requirement it discharges</td></tr>
             </tbody>
           </table>
         </div>
@@ -904,7 +904,7 @@ EVO_REASON_STRATEGY_MODE=off    <span class="c"># default</span></pre></div>
 
       <!-- ================= 08 ================= -->
       <section id="prolog">
-        <h2>Prolog and the knowledge base</h2>
+        <h2>Prolog and the derivation engines</h2>
 
         <p class="lede">SWI-Prolog is not a library call here &mdash; it is the derivation authority for symbolic, assumption-laden reasoning, and the runtime owns the harness so the model cannot replace it.</p>
 
@@ -925,6 +925,25 @@ EVO_REASON_STRATEGY_MODE=off    <span class="c"># default</span></pre></div>
         <p>For <code>prolog_exec</code> the model writes only a declarative knowledge base; the harness supplies everything else, and each call is isolated. Resource limits are deliberate: a 256&nbsp;MB Prolog stack, a 25-second Prolog execution limit, and a 30-second outer process timeout with cancellation support.</p>
 
         <p>The REASON workflow runs R1 SETUP through R6 ANSWER, and the step whose failure is most instructive is R4, the assumption-dependence test: the harness retracts and reasserts each assumption to see which conclusions actually depend on it. The system prompt warns that an assumption declared as a static rule rather than a dynamic fact <em>survives retraction and makes the test useless</em> &mdash; a silent way to pass a check that did nothing.</p>
+
+        <h3>The other engines a REASON derivation can use</h3>
+
+        <p>Prolog is the spine of <code>REASON</code>, not the whole of it. Some obligations cannot be discharged by a hand-written knowledge base &mdash; a decidable entailment over arithmetic, or a formal proof of a conceptual claim &mdash; and for those the authority reaches for a different engine. Triage chooses which, by mapping the requested criterion to an evidence kind <code>REASON</code> owns: <code>constraint_entailment</code> to <code>smt_entailment</code>, and <code>conceptual_proof</code> to <code>lean_proof</code>.</p>
+
+        <div class="tablewrap">
+          <table>
+            <thead><tr><th>Engine</th><th>Tool</th><th>The obligation it closes</th></tr></thead>
+            <tbody>
+              <tr><td>Prolog</td><td><code>prolog_exec</code></td><td>always required &mdash; the seven-section terminal is Prolog-bound, and STEP 2&ndash;4 are guaranteed by the runtime harness on any successful run</td></tr>
+              <tr><td>SMT entailment</td><td><code>smt_entail</code></td><td>a definitive <code>PROVED</code> or <code>REFUTED</code> verdict; <code>UNDERDETERMINED</code> does not close it</td></tr>
+              <tr><td>Lean</td><td><code>lean_prove</code></td><td>a machine-checked proof, and not a bare logical law</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>What keeps this orchestration rather than a tool grab-bag is the binding rule. An auxiliary engine does not get to assert its own conclusion: it must name the <code>spec_requirement/2</code> it discharges, through <code>requirement_id</code>, and the runtime rejects a verdict whose id does not appear among the knowledge base&rsquo;s declared requirements. The engines discharge named obligations <em>inside</em> the derivation rather than replacing it &mdash; the gate&rsquo;s own comment is exact about this: SMT entailment &ldquo;certifies a claim within the KB &mdash; it does not replace the derivation.&rdquo;</p>
+
+        <p>Note also what <code>REASON</code> may not reach for. Raw <code>z3_smt</code> is denied in this tier, and the policy says why: <code>REASON</code> uses <code>smt_entail</code> for decidable entailment claims, and must declare its facts, policy, claim, and requirement id rather than hand a solver a free-form query. The ungated solver is withheld; only the mediated one is exposed.</p>
 
         <h3>The knowledge base is not evidence</h3>
 
